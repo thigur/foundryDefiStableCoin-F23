@@ -1,3 +1,9 @@
+/**
+ * @title Decentralized Stablecoin
+ * @author thigur
+ * @notice From Foundry Defi|Stablecoin Lesson 12 by Patric Collins 
+ */
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
