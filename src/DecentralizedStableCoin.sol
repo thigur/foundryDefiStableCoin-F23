@@ -19,7 +19,8 @@ contract DecentralizedStableCoin is ERC20Burnable, Ownable {
     constructor() ERC20("DecentralizedStableCoin", "DSC") {}
     /**
      * In future versions of OpenZeppelin contracts package, Ownable must be 
-     * declared with an address of the contract owner as a parameter. https://github.com/OpenZeppelin/openzeppelin-contracts/commit/13d5e0466a9855e9305119ed383e54fc913fdc60
+     * declared with an address of the contract owner as a parameter. 
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/commit/13d5e0466a9855e9305119ed383e54fc913fdc60
      * @param _amount to be burned
      */
     function burn(uint256 _amount) public override onlyOwner {
