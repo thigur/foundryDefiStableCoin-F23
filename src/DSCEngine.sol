@@ -22,6 +22,7 @@ pragma solidity ^0.8.18;
     import {ReentrancyGuard} from "../lib/openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
     import {ERC20Burnable, ERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol";
     import {AggregatorV3Interface} from "../lib/chainlink-brownie-contracts/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+    import {OracleLib} from "../src/libraries/OracleLib.sol";
 
 contract DSCEngine is ReentrancyGuard {
     
@@ -36,6 +37,11 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__HealthFactorNotImproved();
     error DSCEngine__BrokenHealthFactor(uint256);
     error BSDEngine__TokenAddressAndPriceFeedAddressesMustBeSameLength();
+
+     ////////////////////
+    ///    Types   ///
+    ////////////////////
+    using OracleLib for AggregatorV3Interface;
 
     ////////////////////
     //State Varialbles//
@@ -332,7 +338,8 @@ contract DSCEngine is ReentrancyGuard {
         // Get price of ETH (tokem)
         // $/ETH ??, $1000 = 0.5 ETH
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[token]);
-        (, int256 price,,,) = priceFeed.latestRoundData();
+        //(, int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.staleCheckLatestRoundData();
         return ((usdAmountInWei * PRECISION) / (uint256(price) * 
             ADDITIONAL_FEED_PRECISION));
     }
@@ -353,7 +360,8 @@ contract DSCEngine is ReentrancyGuard {
         uint256 amount) 
         public view returns (uint256) {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(s_priceFeeds[token]);
-        (, int256 price,,,) = priceFeed.latestRoundData();
+        //(, int256 price,,,) = priceFeed.latestRoundData();
+        (, int256 price,,,) = priceFeed.staleCheckLatestRoundData();
         return ((uint256(price) * ADDITIONAL_FEED_PRECISION) * amount) / PRECISION;
     }
 

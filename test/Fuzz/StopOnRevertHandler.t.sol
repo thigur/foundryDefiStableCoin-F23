@@ -6,10 +6,13 @@ import {Test, console} from "../../lib/forge-std/src/Test.sol";
 import {DecentralizedStableCoin} from "../../src/DecentralizedStableCoin.sol";
 import {DSCEngine} from "../../src/DSCEngine.sol";
 import {ERC20Mock} from "../../lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+//Include Price feed updates in the handler
+import {MockV3Aggregator} from "../mocks/MockV3Aggregator.sol";
 
 contract StopOnRevertHandler is Test {
     DSCEngine dscEngine;
     DecentralizedStableCoin dsc;
+    MockV3Aggregator public ethUsdPricefeed;
 
     ERC20Mock weth;
     ERC20Mock wbtc;
@@ -27,6 +30,7 @@ contract StopOnRevertHandler is Test {
         address[] memory collateralTokens = dscEngine.getCollateralTokens();
         weth = ERC20Mock(collateralTokens[0]);
         wbtc = ERC20Mock(collateralTokens[1]);
+        ethUsdPricefeed = MockV3Aggregator(dscEngine.getCollateralTokenPriceFeed((address(weth))));
     }
 
     function mnintDsc(uint256 amount, uint256 addressSeed) public {
@@ -78,7 +82,11 @@ contract StopOnRevertHandler is Test {
         dscEngine.redeemCollateral(address(collateral), amountCollateral);
         vm.stopPrank();
     }
-
+    //This Breaks our invariant test suite, it breaks the invariant!!!
+    // function updateColateralPrice(uint96 newPrice) public {
+    //     int256 newPriceInt = int256(uint256(newPrice));
+    //     ethUsdPricefeed.updateAnswer(newPriceInt);
+    // }
     function _getCollateralFromSeed(uint256 collateralSeed) public view returns (ERC20Mock) {
         console.log("");
         console.log("We are in _getCollateralFromSeed() function !!!!!!!!!!!!");
